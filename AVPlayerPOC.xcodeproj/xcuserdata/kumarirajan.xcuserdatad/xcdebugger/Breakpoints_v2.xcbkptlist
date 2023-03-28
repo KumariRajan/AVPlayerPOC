@@ -46,40 +46,40 @@
             filePath = "AVPlayerPOC/PlayerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
             landmarkName = "accessLogEvent(notification:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "9532907B-D7EF-42D7-8B0A-9A616D89BD76 - 36a968bd79da4589"
+                  uuid = "9532907B-D7EF-42D7-8B0A-9A616D89BD76 - d847519e5d85ed5"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "AVPlayerPOC.VideoPlayerView.accessLogEvent(notification: __C.NSNotification) -&gt; ()"
                   moduleName = "AVPlayerPOC"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kumarirajan/Documents/AVPlayerPOC/AVPlayerPOC/PlayerView.swift"
+                  urlString = "file:///Users/kumarirajan/AVPlayerPOC/AVPlayerPOC/PlayerView.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80"
-                  offsetFromSymbolStart = "71">
+                  startingLineNumber = "99"
+                  endingLineNumber = "99"
+                  offsetFromSymbolStart = "64">
                </Location>
                <Location
-                  uuid = "9532907B-D7EF-42D7-8B0A-9A616D89BD76 - 36a968bd79da4589"
+                  uuid = "9532907B-D7EF-42D7-8B0A-9A616D89BD76 - d847519e5d85ed5"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "AVPlayerPOC.VideoPlayerView.accessLogEvent(notification: __C.NSNotification) -&gt; ()"
                   moduleName = "AVPlayerPOC"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/kumarirajan/Documents/AVPlayerPOC/AVPlayerPOC/PlayerView.swift"
+                  urlString = "file:///Users/kumarirajan/AVPlayerPOC/AVPlayerPOC/PlayerView.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80"
-                  offsetFromSymbolStart = "384">
+                  startingLineNumber = "99"
+                  endingLineNumber = "99"
+                  offsetFromSymbolStart = "308">
                </Location>
             </Locations>
          </BreakpointContent>

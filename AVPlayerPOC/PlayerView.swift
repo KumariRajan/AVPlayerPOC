@@ -20,6 +20,7 @@ class VideoPlayerView: UIView {
         return AVPlayerLayer.self
     }
     
+    // get a new instance of player for this playback session
     var player: AVPlayer? {
         get {
             return playerLayer.player
@@ -38,11 +39,21 @@ class VideoPlayerView: UIView {
     private var playerItem: AVPlayerItem?
     var delegate: PlayerViewDelegate?
     
+    /**
+     * isPlaying is `true` if the player is currently playing, i.e. has started and is not paused.
+     */
     var isPlaying = false
     
     var lastObservedBitrate: Double = 0
     var mostRecentBitrate: Double = 0
     
+    /**
+     * Set up AVAssets of current playback
+     *
+     * - Parameter url: URL of current playback.
+     * - Parameter completion: It will return the AVAssets of current playback when the URL is loaded sucessfully.
+     *
+     */
     private func setUpAsset(with url: URL, completion: ((_ asset: AVAsset) -> Void)?) {
         let asset = AVAsset(url: url)
         asset.loadValuesAsynchronously(forKeys: ["playable"]) {
@@ -61,10 +72,18 @@ class VideoPlayerView: UIView {
         }
     }
     
+    
+    /**
+     * Added observers to current playback status.
+     *
+     * - Parameter asset: AVAsset of current playback.
+     *
+     */
     private func setUpPlayerItem(with asset: AVAsset) {
         playerItem = AVPlayerItem(asset: asset)
         playerItem?.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.old, .new], context: &playerItemContext)
         let interval = CMTime(value: 1, timescale: 2)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.playInterrupt), name: AVAudioSession.interruptionNotification, object: nil)
             
         DispatchQueue.main.async { [weak self] in
             self?.player = AVPlayer(playerItem: self?.playerItem!)
@@ -90,14 +109,15 @@ class VideoPlayerView: UIView {
         }
     }
     
-    
+    /**
+     * Observing status of current playback.
+     */
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         // Only handle observations for the playerItemContext
         guard context == &playerItemContext else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
-        print("key:\(keyPath)")
             
         if keyPath == #keyPath(AVPlayerItem.status) {
             let status: AVPlayerItem.Status
@@ -125,6 +145,14 @@ class VideoPlayerView: UIView {
         
     }
 
+    /**
+     * Starts playback or resumes after being paused. Has no effect if the player is already playing.
+     *
+     * You can wait for `onPlaying` event to get notified when playback starts and `onPlay` to
+     * get notified when playback is about to start but not started yet.
+     *
+     * - Parameter url: URL of current playback.
+     */
     func play(with url: URL) {
         setUpAsset(with: url) { [weak self] (asset: AVAsset) in
             self?.setUpPlayerItem(with: asset)
@@ -132,16 +160,27 @@ class VideoPlayerView: UIView {
         self.isPlaying = true
     }
     
+    // Starts playback or resumes after being paused. Has no effect if the player is already playing.
     func play() {
         self.player?.play()
         self.isPlaying = true
     }
     
+    /**
+     * Pauses the video if it is playing. Has no effect if the player is already paused.
+     *
+     * You can wait for `onPaused` event to get notified of successful pause.
+     */
     func pause() {
         self.player?.pause()
         self.isPlaying = false
     }
     
+    /**
+     * Pauses the video if it is playing. Has no effect if the player is already paused.
+     *
+     * You can wait for `onPaused` event to get notified of successful pause.
+     */
     func changeQuality() {
         self.player?.currentItem?.preferredPeakBitRate = 2304
     }
@@ -150,14 +189,27 @@ class VideoPlayerView: UIView {
         
     }
     
-    func audioSessionObserver() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback, mode: AVAudioSession.Mode.default, options: .mixWithOthers) //For playing volume when phone is on silent
-        } catch {
-            print(error.localizedDescription)
+   @objc func playInterrupt(notification: NSNotification) {
+        if notification.name == AVAudioSession.interruptionNotification && notification.userInfo != nil {
+            let info = notification.userInfo!
+            var intValue: UInt = 0
+            (info[AVAudioSessionInterruptionTypeKey] as! NSValue).getValue(&intValue)
+            if let type = AVAudioSession.InterruptionType(rawValue: intValue) {
+                switch type {
+                case .began:
+                    print("playInterrupt began")
+                case .ended:
+                    print("playInterrupt ended")
+                @unknown default:
+                    print("playInterrupt default")
+                }
+            }
         }
     }
     
+    /**
+     * Seeks forward to 15 seconds.
+     */
     func seekForward() {
         let currentTime = self.player?.currentTime()
         let timeToAdd   = CMTimeMakeWithSeconds(15,preferredTimescale: 1);
@@ -167,6 +219,9 @@ class VideoPlayerView: UIView {
         }
     }
     
+    /**
+     * Seeks backward to 15 seconds.
+     */
     func seekBackward() {
         let currentTime = self.player?.currentTime()
         let timeToSubtract   = CMTimeMakeWithSeconds(15,preferredTimescale: 1);
@@ -180,6 +235,10 @@ class VideoPlayerView: UIView {
 //        self.player?.seek(to: <#T##CMTime#>, toleranceBefore: <#T##CMTime#>, toleranceAfter: <#T##CMTime#>)
     }
     
+    
+    /**
+     * Observing current playback duration changed.
+     */
     func onDurationChangedObserver() {
         let interval = CMTime(value: 1, timescale: 2)
         player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { (progressTime) in
